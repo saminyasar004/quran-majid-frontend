@@ -121,9 +121,9 @@ export function AyahList({ surahNumber, settings }: Props) {
                       playAyah({
                         surah: surah.number,
                         ayah: ayah.numberInSurah,
-                        surahName: surah.englishName,
+                        surahName: surah.englishName || "",
                         globalAyahNumber: ayah.number,
-                        totalAyahs: surah.numberOfAyahs,
+                        totalAyahs: surah.numberOfAyahs || 0,
                       })
                     }
                     className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
@@ -143,7 +143,7 @@ export function AyahList({ surahNumber, settings }: Props) {
                       toggleBookmark({
                         surah: surah.number,
                         ayah: ayah.numberInSurah,
-                        surahName: surah.englishName,
+                        surahName: surah.englishName || "",
                         text: ayah.text || "",
                       })
                     }

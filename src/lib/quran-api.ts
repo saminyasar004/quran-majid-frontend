@@ -34,6 +34,12 @@ export interface SurahData {
   totalVerses: number;
   type: string;
   ayahs: AyahArabic[];
+  // Mapped fields for component convenience
+  name?: string;
+  englishName?: string;
+  englishNameTranslation?: string;
+  numberOfAyahs?: number;
+  revelationType?: string;
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:4000/api";
