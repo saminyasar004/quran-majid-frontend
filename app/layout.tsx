@@ -10,7 +10,7 @@ const amiri = Amiri({ weight: ["400", "700"], subsets: ["arabic"], variable: "--
 export const metadata: Metadata = {
   title: "Quran Majid",
   description: "A comprehensive Quran application for reading and listening.",
-  authors: [{ name: "Nurul Ayah" }],
+  authors: [{ name: "Quran Majid" }],
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
