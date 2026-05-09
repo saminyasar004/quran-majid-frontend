@@ -1,0 +1,146 @@
+export interface SurahMeta {
+  number: number;
+  nameArabic: string;
+  nameEnglish: string;
+  nameTranslation: string;
+  totalVerses: number;
+  type: string;
+}
+
+export interface AyahArabic {
+  number: number;
+  textArabic: string;
+  textEnglish: string;
+  text?: string; // Added for mapping compatibility
+  numberInSurah: number;
+  juz: number;
+  page: number;
+  hizb: number;
+  sajda: boolean;
+  audioUrl?: string;
+}
+
+export interface SurahData {
+  number: number;
+  nameArabic: string;
+  nameEnglish: string;
+  nameTranslation: string;
+  totalVerses: number;
+  type: string;
+  ayahs: AyahArabic[];
+}
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:4000/api";
+
+export async function fetchSurahList(): Promise<SurahMeta[]> {
+  const res = await fetch(`${API_BASE_URL}/surahs`);
+  if (!res.ok) {
+    const errorText = await res.text().catch(() => "Unknown error");
+    throw new Error(
+      `Failed to fetch surah list: ${res.status} ${res.statusText}. ${errorText.slice(0, 100)}`,
+    );
+  }
+  return await res.json();
+}
+
+export async function fetchSurah(num: number, includeAudio = false): Promise<SurahData> {
+  const res = await fetch(`${API_BASE_URL}/surahs/${num}${includeAudio ? "?audio=true" : ""}`);
+  if (!res.ok) {
+    const errorText = await res.text().catch(() => "Unknown error");
+    throw new Error(
+      `Failed to fetch surah ${num}: ${res.status} ${res.statusText}. ${errorText.slice(0, 100)}`,
+    );
+  }
+  return await res.json();
+}
+
+export async function fetchSurahWithTranslation(num: number, _translation?: string) {
+  const surah = await fetchSurah(num, true);
+  const ayahs = surah.ayahs || [];
+  return {
+    surah: {
+      ...surah,
+      name: surah.nameArabic,
+      englishName: surah.nameEnglish,
+      englishNameTranslation: surah.nameTranslation,
+      numberOfAyahs: surah.totalVerses,
+      revelationType: surah.type,
+      ayahs: ayahs.map((a) => ({ ...a, text: a.textArabic })),
+    },
+    translations: ayahs.map((a) => ({
+      number: a.number,
+      text: a.textEnglish,
+      numberInSurah: a.numberInSurah,
+    })),
+  };
+}
+
+export async function fetchAyahAudio(globalAyahNumber: number, reciter = "ar.alafasy") {
+  const res = await fetch(`${API_BASE_URL}/audio/ayah/${globalAyahNumber}?reciter=${reciter}`);
+  if (!res.ok) {
+    const errorText = await res.text().catch(() => "Unknown error");
+    throw new Error(
+      `Failed to fetch ayah audio: ${res.status} ${res.statusText}. ${errorText.slice(0, 100)}`,
+    );
+  }
+  const json = await res.json();
+  return json.audioUrl;
+}
+
+export interface Reciter {
+  identifier: string;
+  name: string;
+  englishName: string;
+  format: string;
+  type: string;
+  language: string;
+}
+
+export async function fetchReciters(): Promise<Reciter[]> {
+  const res = await fetch(`${API_BASE_URL}/audio/reciters`);
+  if (!res.ok) {
+    const errorText = await res.text().catch(() => "Unknown error");
+    throw new Error(`Failed to fetch reciters: ${res.status} ${res.statusText}. ${errorText.slice(0, 100)}`);
+  }
+  return await res.json();
+}
+
+export const TRANSLATION_NAME: Record<string, string> = {
+  "en.sahih": "Saheeh International",
+  "en.pickthall": "Pickthall",
+  "en.yusufali": "Yusuf Ali",
+  "en.asad": "Muhammad Asad",
+};
+
+export const JUZ_STARTS: { juz: number; surah: number; ayah: number }[] = [
+  { juz: 1, surah: 1, ayah: 1 },
+  { juz: 2, surah: 2, ayah: 142 },
+  { juz: 3, surah: 2, ayah: 253 },
+  { juz: 4, surah: 3, ayah: 93 },
+  { juz: 5, surah: 4, ayah: 24 },
+  { juz: 6, surah: 4, ayah: 148 },
+  { juz: 7, surah: 5, ayah: 82 },
+  { juz: 8, surah: 6, ayah: 111 },
+  { juz: 9, surah: 7, ayah: 88 },
+  { juz: 10, surah: 8, ayah: 41 },
+  { juz: 11, surah: 9, ayah: 93 },
+  { juz: 12, surah: 11, ayah: 6 },
+  { juz: 13, surah: 12, ayah: 53 },
+  { juz: 14, surah: 15, ayah: 1 },
+  { juz: 15, surah: 17, ayah: 1 },
+  { juz: 16, surah: 18, ayah: 75 },
+  { juz: 17, surah: 21, ayah: 1 },
+  { juz: 18, surah: 23, ayah: 1 },
+  { juz: 19, surah: 25, ayah: 21 },
+  { juz: 20, surah: 27, ayah: 56 },
+  { juz: 21, surah: 29, ayah: 46 },
+  { juz: 22, surah: 33, ayah: 31 },
+  { juz: 23, surah: 36, ayah: 28 },
+  { juz: 24, surah: 39, ayah: 32 },
+  { juz: 25, surah: 41, ayah: 47 },
+  { juz: 26, surah: 46, ayah: 1 },
+  { juz: 27, surah: 51, ayah: 31 },
+  { juz: 28, surah: 58, ayah: 1 },
+  { juz: 29, surah: 67, ayah: 1 },
+  { juz: 30, surah: 78, ayah: 1 },
+];
