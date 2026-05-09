@@ -20,6 +20,12 @@ export interface AyahArabic {
   audioUrl?: string;
 }
 
+export interface AyahTranslated {
+  number: number;
+  text: string;
+  numberInSurah: number;
+}
+
 export interface SurahData {
   number: number;
   nameArabic: string;
